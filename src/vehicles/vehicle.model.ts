@@ -34,7 +34,7 @@ export interface Review extends mongoose.Document {
     user_id: String;
     rider_id: String;
     vehicle_id: String;
-    revirew: String;
+    review: String;
 }
 export const ReviewSchema = new mongoose.Schema({
     user_id: { type: String },

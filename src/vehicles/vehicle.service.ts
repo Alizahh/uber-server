@@ -12,4 +12,19 @@ export class VehicleService {
         @InjectModel("Payment") private readonly paymentModel: Model<Payment>
     ) { }
 
+    async addReview(user_id: String, rider_id: String, vehicle_id: String, review: string) {
+        const userReview = new this.reviewModel({
+            user_id, rider_id, vehicle_id, review
+        });
+        const result = await userReview.save();
+        throw new HttpException(
+            {
+                status: HttpStatus.OK,
+                msg: "Review from user added successfully",
+                data: result,
+            },
+            HttpStatus.OK
+        );
+    }
+
 }

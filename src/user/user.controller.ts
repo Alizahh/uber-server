@@ -41,4 +41,15 @@ export class UserController {
             });
         }
     }
+
+    //request for a ride
+    @Post('requestForRide')
+    async rideRequest(
+        @Body("user_id") user_id: String,
+        @Body("location") location: Number,
+        @Body("vehicle_type") vehicle_type: String
+    ) {
+        const request = await this.userService.rideRequest(user_id, location, vehicle_type);
+        return;
+    }
 }

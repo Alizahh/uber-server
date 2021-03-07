@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Patch, Delete, Req, Res } from "@ne
 import { Model } from 'mongoose';
 import { VehicleService } from './vehicle.service';
 import { UserService } from '../user/user.service';
-@Controller("vehicle")
+@Controller("booking")
 export class VehicleController {
     constructor(private readonly vehicleService: VehicleService,
         private readonly userService: UserService) { }
@@ -29,5 +29,16 @@ export class VehicleController {
     ) {
         const addmoney = await this.userService.deductMoney(wallet);
         return addmoney;
+    }
+
+    @Post('postReview')
+    async postReview(
+        @Body("user_id") user_id: string,
+        @Body("rider_id") rider_id: string,
+        @Body("vehicle_id") vehicle_id: string,
+        @Body("review") review: string
+    ) {
+        const postReview = await this.vehicleService.addReview(user_id, rider_id, vehicle_id, review);
+        return postReview;
     }
 }

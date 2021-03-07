@@ -124,19 +124,72 @@ export class UserService {
     }
 
     async addMoney(data) {
-        const userWallet = await this.userWallet.findByIdAndUpdate({ user_id: data.user_id }, { $inc: { amount: data.amount } });
+        const userWallet = await this.userWallet.findByIdAndUpdate(
+            { user_id: data.user_id },
+            { $inc: { amount: data.amount } }
+        );
         return userWallet;
     }
 
     async deductMoney(data) {
-        const userWallet = await this.userWallet.findByIdAndUpdate({ user_id: data.user_id }, { $inc: { amount: -data.amount } });
+        const userWallet = await this.userWallet.findByIdAndUpdate(
+            { user_id: data.user_id },
+            { $inc: { amount: -data.amount } }
+        );
         return userWallet;
     }
 
-    async PeakFactorCalculator(location: Number) {
-        const availableRiders = await this.userModel.find({})
-        return;
+    async rideRequest(user_id: String, location: Number, vehicle_type: String) {
+        const booking = new this.userBooking({
+            user_id, location, vehicle_type
+        });
+        const result = await booking.save();
+        throw new HttpException(
+            {
+                status: HttpStatus.OK,
+                msg: "Searching for a ride request.PLease wait",
+                data: result,
+            },
+            HttpStatus.OK
+        );
     }
+
+    async RideAccept(user_id: String, vehicle_id: String, rider_id: String, ride_accept: Boolean) {
+        if (ride_accept) {
+            const bookingdetails = await this.userBooking.findOneAndUpdate(
+                { user_id: user_id },
+                {
+                    verhicle_id: vehicle_id,
+                    ride_accept: ride_accept,
+                    rider_id: rider_id,
+                },
+                { new: true }
+            );
+            throw new HttpException(
+                {
+                    status: HttpStatus.OK,
+                    msg: "Rider accepted",
+                    data: bookingdetails,
+                },
+                HttpStatus.OK
+            );
+        } else {
+            throw new HttpException(
+                {
+                    status: HttpStatus.BAD_REQUEST,
+                    msg: "ride rejected by the rider",
+                    data: [],
+                },
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
+    }
+
+    // async PeakFactorCalculator(location: Number) {
+    //     const availableRiders = await this.userModel.find({})
+    //     return;
+    // }
     // async getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     //     var R = 6371; // Radius of the earth in km
     //     var dLat = deg2rad(lat2 - lat1);  // deg2rad below

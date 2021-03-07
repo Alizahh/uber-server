@@ -5,7 +5,7 @@ export const UserSchema = new mongoose.Schema({
     LastName: { type: String, unique: false, required: true, maxlength: 30 },
     email: { type: String, trim: true, unique: 1 },
     hash: { type: String, required: true },
-    Phone__number: { type: Number, minlength: 11, required: true },
+    Phone_number: { type: Number, minlength: 11, required: true },
     DOB: { type: Date },
     rating: { type: String, default: 3.4 },
     admin: { type: Boolean, default: false },
@@ -18,18 +18,41 @@ export const UserSchema = new mongoose.Schema({
 });
 export const BookingSchema = new mongoose.Schema({
     user_id: { type: String, required: true },
-    rider_id: { type: String, required: true },
-    verhicle_id: { type: String, required: true },
-    Peak_Factor: { type: Number, required: true },
-    Fare: { type: Number, required: true },
-    Time: { type: Date, required: true, default: Date.now },
+    rider_id: { type: String },
+    verhicle_id: { type: String },
+    Peak_Factor: { type: Number },
+    Fare: { type: Number },
+    Time: { type: Date, default: Date.now },
+    vehicle_type: { type: String },
     From_Location: { type: Number, required: true },
     To_Location: [{
         latitude: { type: Number, required: true },
         longitude: { type: Number, required: true },
     }],
+    started_time: { type: Date },
+    ended_time: { type: Date },
+    booking_type: { type: String },
+    booking_status: { type: String },
+    ride_accept: { type: Boolean, default: false },
+    ride_status: { type: String }
 });
-
+export interface Booking extends mongoose.Document {
+    user_id: String;
+    rider_id: String;
+    verhicle_id: String;
+    Peak_Factor: String;
+    Fare: String;
+    Time: Date;
+    vehicle_type: String;
+    From_Location: Number;
+    To_Location: Number;
+    started_time: Date;
+    ended_time: Date;
+    booking_type: String;
+    booking_status: String;
+    ride_accept: Boolean;
+    ride_status: String;
+}
 export const WalletSchema = new mongoose.Schema({
     user_id: { type: String, required: true },
     amount: { type: Number, required: true },
@@ -41,7 +64,7 @@ export interface User extends mongoose.Document {
     LastName: String;
     email: String;
     hash: String;
-    Phone__number: Number;
+    Phone_number: Number;
     DOD: Date;
     rating: Number;
     admin: Boolean;
@@ -53,21 +76,7 @@ export interface User extends mongoose.Document {
     Available: Boolean;
 }
 
-export interface Booking extends mongoose.Document {
-    user_id: String;
-    rider_id: String;
-    verhicle_id: String;
-    Peak_Factor: String;
-    Fare: String;
-    Time: Date;
-    From_Location: Number;
-    To_Location: Number;
-    started_time: Date;
-    ended_time: Date;
-    booking_type: String;
-    booking_status: String;
-    user_Active: Boolean;
-}
+
 export interface Wallet extends mongoose.Document {
     user_id: String;
     amount: Number;
