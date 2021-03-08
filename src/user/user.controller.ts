@@ -42,7 +42,7 @@ export class UserController {
         }
     }
 
-    //request for a ride
+    //request for a ride customer end
     @Post('requestForRide')
     async rideRequest(
         @Body("user_id") user_id: String,
@@ -51,5 +51,44 @@ export class UserController {
     ) {
         const request = await this.userService.rideRequest(user_id, location, vehicle_type);
         return;
+    }
+
+    //ride accept or reject rider end
+    @Post("acceptRide")
+    async riderResponse(
+        @Body("booking_id") _id: String,
+        @Body("vehicle_id") vehicle_id: String,
+        @Body("rider_id") rider_id: String,
+        @Body("ride_accept") ride_accept: Boolean
+    ) {
+        const riderResponse = await this.userService.RideAccept(_id, vehicle_id, rider_id, ride_accept);
+        return riderResponse;
+    }
+
+    @Post("startRide")
+    async startRide(
+        @Body("booking_id") _id: String,
+        @Body("location") location: Number,
+    ) {
+        const rideStatus = await this.userService.StartRide(_id, location);
+        return rideStatus;
+    }
+
+    @Post("endRide")
+    async EndRide(
+        @Body("booking_id") _id: String,
+        @Body("location") location: Number,
+        @Body("amount") amount: Number
+    ) {
+        const rideStatus = await this.userService.EndRide(_id, location, amount);
+        return rideStatus;
+    }
+
+    @Post("cancelRide")
+    async rideStarted(
+        @Body("booking_id") _id: String,
+    ) {
+        const rideStatus = await this.userService.CancelRide(_id);
+        return rideStatus;
     }
 }

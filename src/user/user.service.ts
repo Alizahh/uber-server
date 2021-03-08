@@ -163,7 +163,7 @@ export class UserService {
                     verhicle_id: vehicle_id,
                     ride_accept: ride_accept,
                     rider_id: rider_id,
-                    ride_status: "waiting"
+                    ride_status: "confirmed"
                 },
                 { new: true }
             );
@@ -176,11 +176,18 @@ export class UserService {
                 HttpStatus.OK
             );
         } else {
+            const bookingdetails = await this.userBooking.findOneAndUpdate(
+                { _id: booking_id },
+                {
+                    ride_status: "waiting"
+                },
+                { new: true }
+            );
             throw new HttpException(
                 {
                     status: HttpStatus.BAD_REQUEST,
-                    msg: "ride rejected by the rider",
-                    data: [],
+                    msg: "ride has been rejected by the rider",
+                    data: bookingdetails,
                 },
                 HttpStatus.BAD_REQUEST
             );
@@ -218,6 +225,79 @@ export class UserService {
         const rideAndTripDetail = { ride, tripdetails };
         return rideAndTripDetail;
     }
+
+    async CancelRide(booking_id) {
+        const cancel = await this.userBooking.findOneAndUpdate({ _id: booking_id }, {
+            ride_status: "canceled",
+            verhicle_id: "",
+            vehicle_type: "",
+            rider_id: "",
+        }, {
+            new: true
+        });
+        return cancel;
+    }
+
+    async CalculateDistance(currentLocation, destinationLocation) {
+
+        let R = 6371; // Radius of the earth in km
+        let dLat = this.deg2rad(destinationLocation.latitude - currentLocation.latitude);  // deg2rad below
+        let dLon = this.deg2rad(destinationLocation.longitude - currentLocation.longitude);
+        let a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(this.deg2rad(currentLocation.latitude)) * Math.cos(this.deg2rad(destinationLocation.latitude)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2)
+            ;
+        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        let distanceInKm = R * c; // Distance in 
+        return distanceInKm;
+    }
+
+    deg2rad = (deg) => {
+        return deg * (Math.PI / 180);
+    }
+
+    async CalculateFare(distance: Number, vehicle_type: String, booking_id: String) {
+        // const rideDetails = await this.userBooking.findById({ _id: booking_id });
+        let amount = 0;
+        if (vehicle_type === "mini") {
+            let perKm = 8.80;
+            let base_fare = 64;
+            const minimum_fare = 96;
+            // if (rideDetails.ride_status === "notMoving") {
+            //     let perMinute = 3.93;
+            //     amount = amount + perMinute;
+            // }
+            // amount = distance * perKm;
+        }
+        return;
+    }
+
+    async rideWaiting(booking_id: String) {
+        const rideStatus = await this.userBooking.findOneAndUpdate(
+            { _id: booking_id },
+            { ride_status: "notMoving" },
+            { new: true });
+    }
+
+    // Base Fare: Rs. 64
+    // Per KM: Rs. 8.80
+    // Per Minute: Rs. 3.93
+    // Minimum Fare: Rs. 96
+    // 2. Auto:
+
+    //     Base Fare: Rs. 17.71
+    // Per KM: Rs. 12.13
+    // Per Minute: Rs. 3.61
+    // Minimum Fare: Rs. 71
+    // 3. Go:
+
+    //     Base Fare: Rs. 80
+    // Per KM: Rs. 11.00
+    // Per Minute: Rs. 4.91
+    // Minimum Fare: Rs. 120
+
+}
     // async PeakFactorCalculator(location: Number) {
     //     const availableRiders = await this.userModel.find({})
     //     return;
@@ -239,4 +319,4 @@ export class UserService {
     // async deg2rad(deg) {
     //     return deg * (Math.PI / 180)
     // }
-}
+
