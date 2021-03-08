@@ -83,14 +83,13 @@ export interface Wallet extends mongoose.Document {
     rider_id: String;
 }
 
-export interface TripDetailes extends mongoose.Document {
+export interface TripDetaile extends mongoose.Document {
     user_id: String;
     rider_id: String;
     Time: Date;
     pickup_loc: Number;
     dropoff_loc: Number;
     Amount: Number;
-    Fare: Number;
     rating: Number;
 }
 export const TripDetailesSchema = new mongoose.Schema({
@@ -106,8 +105,7 @@ export const TripDetailesSchema = new mongoose.Schema({
         longitude: { type: Number }
     },
     Amount: { type: Number, required: true },
-    Fare: { type: Number, required: true },
-    rating: { type: Number, required: true },
+    rating: { type: Number },
 });
 
 export interface Location extends mongoose.Document {

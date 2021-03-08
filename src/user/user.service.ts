@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, Booking, Wallet } from './user.model';
+import { User, Booking, Wallet, TripDetaile } from './user.model';
 // import { jwtToken } from './token';
 
 import jwt = require('jsonwebtoken');
@@ -11,7 +11,8 @@ export class UserService {
     constructor(
         @InjectModel('User') private readonly userModel: Model<User>,
         @InjectModel('UserBooking') private readonly userBooking: Model<Booking>,
-        @InjectModel('UserWallet') private readonly userWallet: Model<Wallet>
+        @InjectModel('UserWallet') private readonly userWallet: Model<Wallet>,
+        @InjectModel('TripDetail') private readonly tripDetailModel: Model<TripDetaile>
     ) { }
 
     async Signup(
@@ -154,14 +155,15 @@ export class UserService {
         );
     }
 
-    async RideAccept(user_id: String, vehicle_id: String, rider_id: String, ride_accept: Boolean) {
+    async RideAccept(booking_id: String, vehicle_id: String, rider_id: String, ride_accept: Boolean) {
         if (ride_accept) {
             const bookingdetails = await this.userBooking.findOneAndUpdate(
-                { user_id: user_id },
+                { _id: booking_id },
                 {
                     verhicle_id: vehicle_id,
                     ride_accept: ride_accept,
                     rider_id: rider_id,
+                    ride_status: "waiting"
                 },
                 { new: true }
             );
@@ -186,6 +188,36 @@ export class UserService {
 
     }
 
+    async StartRide(booking_id: String, location: Number) {
+        const ride = await this.userBooking.findOneAndUpdate(
+            { _id: booking_id },
+            {
+                started_time: new Date(),
+                From_Location: location,
+                ride_status: "commenced"
+            });
+        return ride;
+    }
+
+    async EndRide(Booking_id: String, location: Number, amount: Number) {
+        const ride = await this.userBooking.findOneAndUpdate(
+            { _id: Booking_id },
+            {
+                ended_time: new Date(),
+                To_Location: location,
+                ride_status: "completed"
+            });
+        const tripdetails = new this.tripDetailModel({
+            user_id: ride.user_id,
+            rider_id: ride.rider_id,
+            Time: ride.ended_time,
+            pickup_loc: ride.From_Location,
+            dropoff_loc: location,
+            Amount: amount
+        });
+        const rideAndTripDetail = { ride, tripdetails };
+        return rideAndTripDetail;
+    }
     // async PeakFactorCalculator(location: Number) {
     //     const availableRiders = await this.userModel.find({})
     //     return;
