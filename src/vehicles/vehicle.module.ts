@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { VehicleSchema, PaymentSchema, ReviewSchema } from "./vehicle.model";
+import { VehicleSchema, PaymentSchema } from "./vehicle.model";
 import { VehicleService } from "./vehicle.service";
 import { VehicleController } from "./vehicle.controller";
 import { MongooseModule } from '@nestjs/mongoose';
@@ -7,8 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     imports: [
         MongooseModule.forFeature([
             { name: "Vehicle", schema: VehicleSchema },
-            { name: "Payment", schema: PaymentSchema },
-            { name: "Review", schema: ReviewSchema }
+            { name: "Payment", schema: PaymentSchema }
         ]),
     ],
     controllers: [VehicleController],

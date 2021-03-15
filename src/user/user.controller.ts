@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Patch, Delete, Req, Res } from "@nestjs/common";
-import { UserService } from "./user.service";
 import { Request, Response } from 'express';
+import { UserService } from "./user.service";
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) { }
@@ -42,53 +42,19 @@ export class UserController {
         }
     }
 
-    //request for a ride customer end
-    @Post('requestForRide')
-    async rideRequest(
-        @Body("user_id") user_id: String,
-        @Body("location") location: Number,
-        @Body("vehicle_type") vehicle_type: String
+    @Post('wallat/addAmount')
+    async addWalletMoney(
+        @Body("wallet") wallet: any
     ) {
-        const request = await this.userService.rideRequest(user_id, location, vehicle_type);
-        return;
+        const addmoney = await this.userService.addMoney(wallet);
+        return addmoney;
     }
 
-    //ride accept or reject rider end
-    @Post("acceptRide")
-    async riderResponse(
-        @Body("booking_id") _id: String,
-        @Body("vehicle_id") vehicle_id: String,
-        @Body("rider_id") rider_id: String,
-        @Body("ride_accept") ride_accept: Boolean
+    @Post('wallat/deductAmount')
+    async deducWalletMoney(
+        @Body("wallet") wallet: any
     ) {
-        const riderResponse = await this.userService.RideAccept(_id, vehicle_id, rider_id, ride_accept);
-        return riderResponse;
-    }
-
-    @Post("startRide")
-    async startRide(
-        @Body("booking_id") _id: String,
-        @Body("location") location: Number,
-    ) {
-        const rideStatus = await this.userService.StartRide(_id, location);
-        return rideStatus;
-    }
-
-    @Post("endRide")
-    async EndRide(
-        @Body("booking_id") _id: String,
-        @Body("location") location: Number,
-        @Body("amount") amount: Number
-    ) {
-        const rideStatus = await this.userService.EndRide(_id, location, amount);
-        return rideStatus;
-    }
-
-    @Post("cancelRide")
-    async rideStarted(
-        @Body("booking_id") _id: String,
-    ) {
-        const rideStatus = await this.userService.CancelRide(_id);
-        return rideStatus;
+        const addmoney = await this.userService.deductMoney(wallet);
+        return addmoney;
     }
 }
